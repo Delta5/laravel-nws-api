@@ -1,0 +1,31 @@
+{
+    "name": "delta5/laravel-nws-api",
+    "description": "A package for Laravel that provides access to the US National Weather Service API.",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "ext-json": "^1.6"
+    },
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "Evan Taylor",
+            "email": "dev@evantaylor.name"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Delta5\\NWSApi\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Delta5\\NWSApi\\NWSApiServiceProvider"
+            ],
+            "aliases": {
+                "NWSApi": "Delta5\\NWSApi\\NWSApiFacade"
+            }
+        }
+    }
+}
