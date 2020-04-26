@@ -2,6 +2,8 @@
 
 namespace Delta5\NWSApi;
 
+use Delta5\NWSApi\Console\Commands\GetStationsCommand;
+use Delta5\NWSApi\Console\Commands\GetZonesCommand;
 use Delta5\NWSApi\Console\Commands\TestAPICommand;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +27,8 @@ class NWSApiServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 TestAPICommand::class,
+                GetZonesCommand::class,
+                GetStationsCommand::class,
             ]);
         }
 

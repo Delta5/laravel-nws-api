@@ -31,7 +31,7 @@ class TestAPICommand extends Command
      */
     public function handle()
     {
-        $alerts = NWSApi::getAllActiveAlerts();
+        $alerts = NWSApi::getAllActiveAlertsLimit(1);
 
         if ($alerts != null) {
 

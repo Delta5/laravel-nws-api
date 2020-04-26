@@ -3,8 +3,10 @@
 namespace Delta5\NWSApi;
 
 use Delta5\NWSApi\Objects\NWSAlert;
+use Delta5\NWSApi\objects\NWSStation;
+use Delta5\NWSApi\objects\NWSZone;
 use GuzzleHttp\Client;
-use Delta5\NSWApi\Objects;
+use Delta5\NSWApi\objects;
 
 class NWSApi
 {
@@ -25,49 +27,30 @@ class NWSApi
 
         $client = new Client($headers);
 
-        return $client->request($method, $url);
-    }
-
-    public static function getAllActiveAlerts()
-    {
-        $res = self::queryAPI(config('nwsapi.endpoint').'/alerts/active', 'GET');
+        $res = $client->request($method, $url);
 
         if($res->getStatusCode() == 200)
         {
             $data = $res->getBody();
-
             $json = json_decode($data, true);
+            return $json['@graph'];
+        }
 
-            $alerts = $json['@graph'];
+        return null;
+    }
 
+    public static function getAllActiveAlerts()
+    {
+        $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active', 'GET');
+
+        if($alerts)
+        {
             $alertList = new \ArrayObject();
 
             foreach($alerts as $alert)
             {
                 $newAlert = new NWSAlert();
-                $newAlert->alertID = $alert['id'];
-                $newAlert->areaDesc = $alert['areaDesc'];
-                $newAlert->alertURL = $alert['@id'];
-                $newAlert->sent = $alert['sent'];
-                $newAlert->effective = $alert['effective'];
-                $newAlert->onset = $alert['onset'];
-                $newAlert->expires = $alert['expires'];
-                $newAlert->ends = $alert['ends'];
-                $newAlert->status = $alert['status'];
-                $newAlert->messageType = $alert['messageType'];
-                $newAlert->category = $alert['category'];
-                $newAlert->severity = $alert['severity'];
-                $newAlert->certainty = $alert['certainty'];
-                $newAlert->urgency = $alert['urgency'];
-                $newAlert->event = $alert['event'];
-                $newAlert->sender = $alert['sender'];
-                $newAlert->senderName = $alert['senderName'];
-                $newAlert->headline = $alert['headline'];
-                $newAlert->description = $alert['description'];
-                $newAlert->instruction = $alert['instruction'];
-                $newAlert->response = $alert['response'];
-                $newAlert->geocode = $alert['geocode'];
-
+                $newAlert->convertArray($alert);
                 $alertList->append($newAlert);
             }
 
@@ -81,46 +64,16 @@ class NWSApi
 
     public static function getAllActiveAlertsLimit($limit)
     {
-        $client = new Client();
+        $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active?limit='.$limit, 'GET');
 
-        $res = self::queryAPI(config('nwsapi.endpoint').'/alerts/active?limit='.$limit, 'GET');
-
-        if($res->getStatusCode() == 200)
+        if($alerts != null)
         {
-            $data = $res->getBody();
-
-            $json = json_decode($data, true);
-
-            $alerts = $json['@graph'];
-
             $alertList = new \ArrayObject();
 
             foreach($alerts as $alert)
             {
                 $newAlert = new NWSAlert();
-                $newAlert->alertID = $alert['id'];
-                $newAlert->areaDesc = $alert['areaDesc'];
-                $newAlert->alertURL = $alert['@id'];
-                $newAlert->sent = $alert['sent'];
-                $newAlert->effective = $alert['effective'];
-                $newAlert->onset = $alert['onset'];
-                $newAlert->expires = $alert['expires'];
-                $newAlert->ends = $alert['ends'];
-                $newAlert->status = $alert['status'];
-                $newAlert->messageType = $alert['messageType'];
-                $newAlert->category = $alert['category'];
-                $newAlert->severity = $alert['severity'];
-                $newAlert->certainty = $alert['certainty'];
-                $newAlert->urgency = $alert['urgency'];
-                $newAlert->event = $alert['event'];
-                $newAlert->sender = $alert['sender'];
-                $newAlert->senderName = $alert['senderName'];
-                $newAlert->headline = $alert['headline'];
-                $newAlert->description = $alert['description'];
-                $newAlert->instruction = $alert['instruction'];
-                $newAlert->response = $alert['response'];
-                $newAlert->geocode = $alert['geocode'];
-
+                $newAlert->convertArray($alert);
                 $alertList->append($newAlert);
             }
 
@@ -130,5 +83,68 @@ class NWSApi
         {
             return null;
         }
+    }
+
+    public static function getAllActiveAlertsByZone($zoneID)
+    {
+        $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active/zone/'.$zoneID, 'GET');
+
+        if($alerts != null)
+        {
+            $alertList = new \ArrayObject();
+
+            foreach($alerts as $alert)
+            {
+                $newAlert = new NWSAlert();
+                $newAlert->convertArray($alert);
+                $alertList->append($newAlert);
+            }
+
+            return $alertList;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public static function getAllZones()
+    {
+        $zones = self::queryAPI(config('nwsapi.endpoint').'/zones', 'GET');
+
+        if($zones != null) {
+            $zoneList = new \ArrayObject();
+
+            foreach ($zones as $zone) {
+                $newZone = new NWSZone();
+                $newZone->convertArray($zone);
+                $zoneList->append($newZone);
+            }
+
+            return $zoneList;
+        }
+
+        return null;
+    }
+
+    public static function getAllStations()
+    {
+        $stations = self::queryAPI(config('nwsapi.endpoint').'/stations', 'GET');
+
+        if($stations != null)
+        {
+            $stationList = new \ArrayObject();
+
+            foreach ($stations as $station)
+            {
+                $newStation = new NWSStation();
+                $newStation->convertArray($station);
+                $stationList->append($newStation);
+            }
+
+            return $stationList;
+        }
+
+        return null;
     }
 }
