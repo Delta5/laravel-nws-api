@@ -2,18 +2,18 @@
 
 namespace Delta5\NWSApi\objects;
 
-class NWSZone implements NWSObject
+class NWSZone
 {
-    public $zoneID;
-    public $zoneURL;
+    public $ID;
+    public $URL;
     public $type;
     public $name;
     public $state;
 
     public function convertArray($zone)
     {
-        $this->zoneID = $zone['id'];
-        $this->zoneURL = $zone['@id'];
+        $this->ID = $zone['id'];
+        $this->URL = $zone['@id'];
         $this->type = $zone['type'];
         $this->name = $zone['name'];
         $this->state = $zone['state'];

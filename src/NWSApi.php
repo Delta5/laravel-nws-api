@@ -39,6 +39,18 @@ class NWSApi
         return null;
     }
 
+    private static function buildStringFromArray(array $array)
+    {
+        $arrayList = '';
+
+        foreach ($array as $item)
+        {
+            $arrayList = $arrayList . ','.$item;
+        }
+
+        return substr($arrayList, 1, strlen($arrayList));
+    }
+
     public static function getAllActiveAlerts()
     {
         $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active', 'GET');
@@ -108,11 +120,46 @@ class NWSApi
         }
     }
 
-    public static function getAllZones()
+    public static function getZones($region = null, $area = null, $type = null, $point = null, $geometry = null)
     {
-        $zones = self::queryAPI(config('nwsapi.endpoint').'/zones', 'GET');
+        $urlParameters = array();
 
-        if($zones != null) {
+        if($region != null)
+        {
+            $urlParameters['region'] = self::buildStringFromArray($region);
+        }
+
+        if($area != null)
+        {
+            $urlParameters['area'] = self::buildStringFromArray($area);
+        }
+
+        if($type != null)
+        {
+            $urlParameters['type'] = self::buildStringFromArray($type);
+        }
+
+        if($point != null)
+        {
+            $urlParameters['point'] = $point;
+        }
+
+        if($geometry != null)
+        {
+            $urlParameters['include_geometry'] = $geometry;
+        }
+
+        if($urlParameters > 0)
+        {
+            $zones = self::queryAPI(config('nwsapi.endpoint').'/zones?'.http_build_query($urlParameters), 'GET');
+        }
+        else
+        {
+            $zones = self::queryAPI(config('nwsapi.endpoint').'/zones', 'GET');
+        }
+
+        if($zones != null)
+        {
             $zoneList = new \ArrayObject();
 
             foreach ($zones as $zone) {
@@ -127,9 +174,28 @@ class NWSApi
         return null;
     }
 
-    public static function getAllStations()
+    public static function getStations($limit = null, $states = null)
     {
-        $stations = self::queryAPI(config('nwsapi.endpoint').'/stations', 'GET');
+        $urlParameters = array();
+
+        if($limit != null)
+        {
+            $urlParameters['limit'] = $limit;
+        }
+
+        if($states != null)
+        {
+            $urlParameters['state'] = self::buildStringFromArray($states);
+        }
+
+        if($urlParameters > 0)
+        {
+            $stations = self::queryAPI(config('nwsapi.endpoint').'/stations?'.http_build_query($urlParameters), 'GET');
+        }
+        else
+        {
+            $stations = self::queryAPI(config('nwsapi.endpoint').'/stations', 'GET');
+        }
 
         if($stations != null)
         {
