@@ -2,6 +2,7 @@
 
 namespace Delta5\NWSApi;
 
+use Delta5\NWSApi\Console\Commands\GetAlertsCommand;
 use Delta5\NWSApi\Console\Commands\GetStationsCommand;
 use Delta5\NWSApi\Console\Commands\GetZonesCommand;
 use Delta5\NWSApi\Console\Commands\TestAPICommand;
@@ -29,6 +30,7 @@ class NWSApiServiceProvider extends ServiceProvider
                 TestAPICommand::class,
                 GetZonesCommand::class,
                 GetStationsCommand::class,
+                GetAlertsCommand::class,
             ]);
         }
 

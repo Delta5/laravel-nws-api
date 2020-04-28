@@ -51,39 +51,84 @@ class NWSApi
         return substr($arrayList, 1, strlen($arrayList));
     }
 
-    public static function getAllActiveAlerts()
+    public static function getAlerts($region = null, $area = null, $zone = null, $urgency = null, $severity = null, $certainty = null, $limit = null, $active = null, $status = null, $region_type = null, $message_type = null, $start = null, $end = null)
     {
-        $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active', 'GET');
+        $urlParameters = array();
 
-        if($alerts)
+        if ($region != null) {
+            $urlParameters['region'] = self::buildStringFromArray($region);
+        }
+
+        if ($area != null) {
+            $urlParameters['area'] = self::buildStringFromArray($area);
+        }
+
+        if ($zone != null) {
+            $urlParameters['zone'] = self::buildStringFromArray($zone);
+        }
+
+        if($urgency != null) {
+            $urlParameters['urgency'] = self::buildStringFromArray($urgency);
+        }
+
+        if($severity != null){
+            $urlParameters['severity'] = self::buildStringFromArray($severity);
+        }
+
+        if($certainty != null)
         {
-            $alertList = new \ArrayObject();
+            $urlParameters['certainty'] = self::buildStringFromArray($certainty);
+        }
 
-            foreach($alerts as $alert)
-            {
-                $newAlert = new NWSAlert();
-                $newAlert->convertArray($alert);
-                $alertList->append($newAlert);
-            }
+        if($limit != null)
+        {
+            $urlParameters['limit'] = $limit;
+        }
 
-            return $alertList;
+        if($active != null)
+        {
+            $urlParameters['active'] = $active;
+        }
+
+        if($status != null)
+        {
+            $urlParameters['status'] = self::buildStringFromArray($status);
+        }
+
+        if($region_type != null)
+        {
+            $urlParameters['region_type'] = $region_type;
+        }
+
+        if($message_type != null)
+        {
+            $urlParameters['message_type'] = self::buildStringFromArray($message_type);
+        }
+
+        if($start != null)
+        {
+            $urlParameters['start'] = $start;
+        }
+
+        if($end != null)
+        {
+            $urlParameters['end'] = $end;
+        }
+
+        if($urlParameters > 0)
+        {
+            $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts?'.http_build_query($urlParameters), 'GET');
         }
         else
         {
-            return null;
+            $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active', 'GET');
         }
-    }
-
-    public static function getAllActiveAlertsLimit($limit)
-    {
-        $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active?limit='.$limit, 'GET');
 
         if($alerts != null)
         {
             $alertList = new \ArrayObject();
 
-            foreach($alerts as $alert)
-            {
+            foreach ($alerts as $alert) {
                 $newAlert = new NWSAlert();
                 $newAlert->convertArray($alert);
                 $alertList->append($newAlert);
@@ -91,33 +136,8 @@ class NWSApi
 
             return $alertList;
         }
-        else
-        {
-            return null;
-        }
-    }
 
-    public static function getAllActiveAlertsByZone($zoneID)
-    {
-        $alerts = self::queryAPI(config('nwsapi.endpoint').'/alerts/active/zone/'.$zoneID, 'GET');
-
-        if($alerts != null)
-        {
-            $alertList = new \ArrayObject();
-
-            foreach($alerts as $alert)
-            {
-                $newAlert = new NWSAlert();
-                $newAlert->convertArray($alert);
-                $alertList->append($newAlert);
-            }
-
-            return $alertList;
-        }
-        else
-        {
-            return null;
-        }
+        return null;
     }
 
     public static function getZones($region = null, $area = null, $type = null, $point = null, $geometry = null)
