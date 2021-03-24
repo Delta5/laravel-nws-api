@@ -2,7 +2,7 @@
     "name": "delta5/laravel-nws-api",
     "description": "A package for Laravel that provides access to the US National Weather Service API.",
     "require": {
-        "guzzlehttp/guzzle": "^6.3",
+        "guzzlehttp/guzzle": "^7.3",
         "ext-json": "*"
     },
     "license": "GPL-3.0-or-later",
